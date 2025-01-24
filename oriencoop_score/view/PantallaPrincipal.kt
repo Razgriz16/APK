@@ -9,21 +9,32 @@ import androidx.compose.foundation.Image
     import androidx.compose.material3.*
     import androidx.compose.runtime.*
     import androidx.compose.runtime.getValue
-    import androidx.compose.ui.Alignment
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
     import androidx.compose.ui.Modifier
     import androidx.compose.ui.draw.shadow
     import androidx.compose.ui.graphics.Color
     import androidx.compose.ui.graphics.RectangleShape
     import androidx.compose.ui.res.painterResource
     import androidx.compose.ui.unit.dp
-    import androidx.navigation.NavController
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
     import com.example.oriencoop_score.Pantalla
     import com.example.oriencoop_score.R
 import com.example.oriencoop_score.view_model.PantallaPrincipalViewModel
 import com.example.oriencoop_score.Result
-    //*****Pantalla Principal*****
+import com.example.oriencoop_score.api.TestManageApi
+import com.example.oriencoop_score.model.TestModel
+import com.example.oriencoop_score.view_model.TestViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Response
+
+//*****Pantalla Principal*****
     @Composable
-    fun PantallaPrincipal(navController: NavController, viewModel: PantallaPrincipalViewModel) {
+    fun PantallaPrincipal(navController: NavController, viewModel: PantallaPrincipalViewModel, testViewModel: TestViewModel = viewModel()) {
         val users by viewModel.users.collectAsState()
         val coroutineScope = rememberCoroutineScope()
 
@@ -32,6 +43,7 @@ import com.example.oriencoop_score.Result
                 .fillMaxSize()
                 .background(Color.White)
         ) {
+
             HeaderRow()
 
 
@@ -67,6 +79,13 @@ import com.example.oriencoop_score.Result
             ) {
                 Text(text = "TestApi", color = Color.White)
             }
+
+            // Observe the response from the ViewModel
+            val response by testViewModel.response.observeAsState()
+            Text(
+                text = response ?: "Waiting for response...",
+                modifier = Modifier.padding(16.dp)
+            )
 
             when (val result = users) {
                 is Result.Success -> {
@@ -184,12 +203,18 @@ import com.example.oriencoop_score.Result
 
     //*****Barra inferior de la app*****
     @Composable
-    fun BottomBar(navController: NavController) {
+    fun BottomBar(navController: NavController, testViewModel: TestViewModel = viewModel()) {
+        val testModel = TestModel(
+            email = "user@example.com",
+            password = "password123",
+            token = "your_token_here"
+        )
         Row(
             modifier = Modifier
+                .shadow(shape = RectangleShape, elevation = 2.dp)
                 .fillMaxWidth()
                 .height(80.dp)
-                .padding(top = 30.dp)
+                .padding(top = 15.dp)
                 .background(Color.White),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -226,14 +251,21 @@ import com.example.oriencoop_score.Result
             )
 
             // Pago
+            val loginRequest = TestModel(
+                email = "user@example.com",
+                password = "your_password",
+                token = "your_token"
+            )
             Image(
                 painter = painterResource(id = R.drawable.icon_sign_dollaricons),
                 contentDescription = null,
+
                 modifier = Modifier
                     .size(60.dp)
                     .padding(end = 25.dp)
-                    .clickable { /* clickear algo */ }
+                    .clickable {testViewModel.updateTestData(testModel)}
             )
+
         }
     }
 

@@ -39,15 +39,11 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel) {
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false);
     val coroutineScope = rememberCoroutineScope()
 
-    if (isLoading)
-        Box(modifier = Modifier.fillMaxSize()){
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        }
-    else{
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp),
+                .padding(10.dp)
+                .imePadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -66,6 +62,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth(0.9f),
+
             ) {
 
                 // Cuadro azul de iniciar sesión
@@ -90,6 +87,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel) {
                         onValueChange = { viewModel.onLoginChanged(it, password) },
                         label = { Text("RUT") },
                         modifier = Modifier.fillMaxWidth()
+
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -137,5 +135,4 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel) {
             }
         }
     }
-}
 

@@ -1,6 +1,6 @@
 package com.example.oriencoop_score.model
 
-import java.util.Objects
+
 
 data class UserResponseWrapper(
         val data: List<UserResponse>

@@ -12,11 +12,12 @@ import com.example.oriencoop_score.view.HarryPotterView
 import com.example.oriencoop_score.view.MisProductos
 import com.example.oriencoop_score.view_model.HarryPotterViewModel
 import com.example.oriencoop_score.view_model.PantallaPrincipalViewModel
+import com.example.oriencoop_score.view_model.TestViewModel
 
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Pantalla.MisProductos.route) {
+    NavHost(navController = navController, startDestination = Pantalla.Login.route) {
         composable(route = Pantalla.Login.route) {
             Login(navController = navController, viewModel = LoginViewModel())
         }
