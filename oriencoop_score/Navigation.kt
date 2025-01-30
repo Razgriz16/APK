@@ -1,5 +1,6 @@
 package com.example.oriencoop_score
 
+import MindicatorsViewModel
 import com.example.oriencoop_score.view_model.LoginViewModel
 import com.example.oriencoop_score.view.PantallaPrincipal
 import androidx.compose.runtime.Composable
@@ -7,12 +8,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.oriencoop_score.api.LoginManageApi.loginService
+import com.example.oriencoop_score.repository.LoginRepository
+import com.example.oriencoop_score.repository.MindicatorsRepository
 import com.example.oriencoop_score.view.Login
-import com.example.oriencoop_score.view.HarryPotterView
 import com.example.oriencoop_score.view.MisProductos
-import com.example.oriencoop_score.view_model.HarryPotterViewModel
-import com.example.oriencoop_score.view_model.PantallaPrincipalViewModel
-import com.example.oriencoop_score.view_model.TestViewModel
+import com.example.oriencoop_score.view.mis_productos.cuenta_cap.CuentaCap
 
 @Composable
 fun Navigation() {
@@ -27,12 +28,14 @@ fun Navigation() {
         }
 
         composable(route = Pantalla.PantallaPrincipal.route) {
-            PantallaPrincipal(navController = navController, viewModel = PantallaPrincipalViewModel())
+            PantallaPrincipal(navController = navController, mindicatorsViewModel = MindicatorsViewModel(
+                MindicatorsRepository()
+            ))
         }
 
-        composable(route = Pantalla.HarryPotterView.route) {
-            val harryPotterViewModel: HarryPotterViewModel = viewModel()
-            HarryPotterView(navController = navController, viewModel = harryPotterViewModel)
+        composable(route = Pantalla.CuentaCap.route) {
+            /*val harryPotterViewModel: HarryPotterViewModel = viewModel()*/
+            CuentaCap(navController = navController, onBackClick = { navController.popBackStack() }) /*, viewModel = harryPotterViewModel*/
         }
 
     }

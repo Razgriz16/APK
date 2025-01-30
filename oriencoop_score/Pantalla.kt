@@ -6,6 +6,6 @@ package com.example.oriencoop_score
 sealed class Pantalla (val route: String) {
     object PantallaPrincipal: Pantalla ( "PantallaPrincipal")
     object Login: Pantalla ( "Login")
-    object HarryPotterView : Pantalla("HarryPotterView") // Add this
     object MisProductos : Pantalla("MisProductos")
+    object CuentaCap : Pantalla("CuentaCap")
     }

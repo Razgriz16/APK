@@ -1,0 +1,49 @@
+  /*****##################################********/
+        Button(
+            onClick = { pantallaPrincipalViewModel.fetchAllUsers() },
+            /*viewModel.fetchAllUsers()*/
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFf49600), // Orange color
+                //disabledContentColor = Color(0xFFf49600)
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "TestApi", color = Color.White)
+        }
+
+        // Observe the response from the ViewModel
+        val response by testViewModel.response.observeAsState()
+        Text(
+            text = response ?: "Waiting for response...",
+            modifier = Modifier.padding(16.dp)
+        )
+
+        when (val result = users) {
+            is Result.Success -> {
+                // Display the data
+                val userList = result.data
+                LazyColumn {
+                    items(userList.size) { index ->
+                        val user = userList[index]
+                        Text(
+                            text = "RUT: ${user.rut}, Password: ${user.password}",
+                            color = Color.Black
+                        )
+                    }
+                }
+            }
+
+            is Result.Error -> {
+                // Show an error message
+                Text(text = "Error: ${result.exception.message}", color = Color.Red)
+            }
+
+            Result.Loading -> {
+                // Show a loading indicator
+                CircularProgressIndicator()
+            }
+
+            null -> {
+                // Initial state, perhaps show nothing or a placeholder
+            }
+        }

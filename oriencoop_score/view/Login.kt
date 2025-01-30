@@ -1,27 +1,38 @@
 package com.example.oriencoop_score.view
-
+import android.util.Log
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import com.example.oriencoop_score.view_model.LoginViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.oriencoop_score.LoginState
 import com.example.oriencoop_score.Pantalla
-
 import com.example.oriencoop_score.R
-import kotlinx.coroutines.launch
+import com.example.oriencoop_score.Result
+import com.example.oriencoop_score.model.HiddenLoginResponse
+import com.example.oriencoop_score.model.ProtectedResourceResponse
+import com.example.oriencoop_score.model.UserLoginResponse
+import com.example.oriencoop_score.repository.LoginRepository
+import com.example.oriencoop_score.ui.theme.AppTheme
 
 @Composable
 fun Login(navController: NavController, viewModel: LoginViewModel) {
+
 
     Box(
         modifier = Modifier
@@ -30,109 +41,113 @@ fun Login(navController: NavController, viewModel: LoginViewModel) {
         contentAlignment = Alignment.Center
     ) { LoginScreen(navController, viewModel) }
 }
+
 //@Preview
 @Composable
 fun LoginScreen(navController: NavController, viewModel: LoginViewModel) {
-    val rut : String by viewModel.rut.observeAsState(initial = "");
-    val password : String by viewModel.password.observeAsState(initial = "");
-    val loginEnable: Boolean by viewModel.loginEnable.observeAsState(initial = false);
-    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false);
+
+
     val coroutineScope = rememberCoroutineScope()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+            .imePadding(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        // Logo
+        Image(painter = painterResource(id = R.drawable.logooriencoop), contentDescription = "Logo")
 
-        Column(
+        Spacer(modifier = Modifier.height(5.dp))
+
+        // Card with form
+        Card(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
-                .imePadding(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            // Logo
-            Image(painter = painterResource(id= R.drawable.logooriencoop), contentDescription = "Logo")
-            /*Text(
-                text = "Oriencoop",
-                fontSize = 28.sp,
-                color = Color(0xFF006FB6)
-            )*/
-
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            // Card with form
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth(0.9f),
+                .fillMaxWidth(0.9f),
 
             ) {
 
-                // Cuadro azul de iniciar sesión
+            // Cuadro azul de iniciar sesión
+            Column(
+                modifier = Modifier
+                    .background(color = Color(0xFF006FB6))
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Inicia sesión",
+                    fontSize = 20.sp,
+                    color = Color.White
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                /***************************************************************/
+                // Collect the login state from the ViewModel
+                val loginState by viewModel.loginState.collectAsState()
+
+                // State for user input
+                var username by remember { mutableStateOf("") }
+                var password by remember { mutableStateOf("") }
+
                 Column(
                     modifier = Modifier
-                        .background(color = Color(0xFF006FB6))
-                        .fillMaxWidth()
+
                         .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = "Inicia sesión",
-                        fontSize = 20.sp,
-                        color = Color.White
+                    // Username TextField
+                    TextField(
+                        value = username,
+                        onValueChange = { username = it },
+                        label = { Text("Username") },
+                        modifier = Modifier.fillMaxWidth()
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // RUT TextField
-                    TextField(
-                        value = rut,
-                        onValueChange = { viewModel.onLoginChanged(it, password) },
-                        label = { Text("RUT") },
-                        modifier = Modifier.fillMaxWidth()
-
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
                     // Password TextField
                     TextField(
                         value = password,
-                        onValueChange = { viewModel.onLoginChanged(rut, it) },
-                        label = { Text("Contraseña") },
+                        onValueChange = { password = it },
+                        label = { Text("Password") },
                         visualTransformation = PasswordVisualTransformation(),
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Ingresar Button
+                    // Login Button
                     Button(
-                        onClick = {navController.navigate(Pantalla.PantallaPrincipal.route); coroutineScope.launch { viewModel.onLoginSelected() }},
+
+                        onClick = {viewModel.performLogin(username, password)},
+                        enabled = loginState !is LoginState.Loading,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFf49600), // Orange color
-                            //disabledContentColor = Color(0xFFf49600)
-                        ),
-                        //######################################enabled = loginEnable,
-                        modifier = Modifier.fillMaxWidth()
+                            containerColor = Color(0xFFf49600))
+
                     ) {
-                        Text(text = "Ingresar", color = Color.White)
+                        Text("Log In")
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    // Links
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        TextButton(onClick = { /* Handle forgot password */ }) {
-                            Text("¿Olvidaste tu clave?", color = Color.White)
-                        }
+                    // Display the login state
+                    when (loginState) {
+                        is LoginState.Loading -> CircularProgressIndicator()
+                        is LoginState.Success -> navController.navigate(Pantalla.PantallaPrincipal.route)
+                        is LoginState.Error -> Text(
+                            text = "error",
+                            color = Color.Red
+                        )
 
-                        TextButton(onClick = { /* Handle create password */ }) {
-                            Text("Crear clave", color = Color.White)
-                        }
+                        else -> {}
                     }
                 }
             }
         }
     }
+}
 

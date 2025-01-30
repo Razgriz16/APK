@@ -1,17 +1,75 @@
 package com.example.oriencoop_score.view_model
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.oriencoop_score.model.UserResponse
-import com.example.oriencoop_score.model.UserResponseWrapper
-import com.example.oriencoop_score.repository.UserRepository
+import com.example.oriencoop_score.LoginState
+import com.example.oriencoop_score.Pantalla
+import com.example.oriencoop_score.repository.LoginRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-class LoginViewModel : ViewModel() {
-    private val repository = UserRepository()
+import com.example.oriencoop_score.Result
+import com.example.oriencoop_score.model.HiddenLoginResponse
+import com.example.oriencoop_score.model.UserLoginResponse
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.sync.Mutex
 
+class LoginViewModel : ViewModel() {
+    private val loginRepository = LoginRepository()
+    private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
+    private val mutex = Mutex()
+    val loginState: StateFlow<LoginState> = _loginState
+
+    fun performLogin(username: String, password: String) {
+        viewModelScope.launch {
+            viewModelScope.launch {
+                if (!mutex.tryLock()) return@launch
+            } // Prevent concurrent execution
+
+
+            _loginState.value = LoginState.Loading
+            try {
+                // Step 1: Perform Hidden Login with hardcoded credentials
+                Log.d("Login", "Performing hidden login...")
+                val hiddenLoginResult = loginRepository.performHiddenLogin("admin", "securepassword")
+                if (hiddenLoginResult is Result.Success) {
+                    val token = hiddenLoginResult.data.token // Extract the token field
+                    Log.d("Login", "Hidden login result: $hiddenLoginResult")
+
+                    // Step 2: Perform User Login with user-provided credentials and token
+                    Log.d("Login", "Performing user login with token: $token")
+                    val userLoginResult = loginRepository.performUserLogin(username, password, token)
+                    if (userLoginResult is Result.Success) {
+                        _loginState.value = LoginState.Success(userLoginResult.data)
+                    } else if (userLoginResult is Result.Error) {
+                        _loginState.value = LoginState.Error(
+                            userLoginResult.exception.message ?: "User login failed"
+                        )
+                    }
+                } else if (hiddenLoginResult is Result.Error) {
+                    _loginState.value = LoginState.Error(
+                        hiddenLoginResult.exception.message ?: "Hidden login failed"
+                    )
+                }
+            } catch (e: Exception) {
+                _loginState.value = LoginState.Error(e.message ?: "An unexpected error occurred")
+            } finally {
+                mutex.unlock()
+            }
+        }
+    }
+}
+
+
+
+
+
+
+/* //VERSION ANTIGUA VIEW MODEL QUE PERMITE LOGEAR CON MAS DE 6 CARACTERES EN LA CONTRASEÑA
+    //private val repository = UserRepository()
     private val _rut = MutableLiveData<String>()
     val rut: LiveData<String> = _rut
 
@@ -23,9 +81,6 @@ class LoginViewModel : ViewModel() {
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
-
-    private val _loginResult = MutableLiveData<com.example.oriencoop_score.Result<UserResponseWrapper>?>() // Fully qualified
-    val loginResult: LiveData<com.example.oriencoop_score.Result<UserResponseWrapper>?> = _loginResult
 
     fun onLoginChanged(rut: String, password: String) {
         _rut.value = rut
@@ -39,7 +94,7 @@ class LoginViewModel : ViewModel() {
         return rut.isNotEmpty()
     }
 
-    fun onLoginSelected() {
+    fun onLoginSelected() {/*
         viewModelScope.launch {
             _isLoading.value = true
 
@@ -51,6 +106,5 @@ class LoginViewModel : ViewModel() {
             _loginResult.value = result
 
             _isLoading.value = false
-        }
-    }
-}
+        }*/
+    }*/

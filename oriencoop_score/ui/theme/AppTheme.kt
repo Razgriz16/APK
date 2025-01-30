@@ -7,36 +7,43 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 object AppTheme {
-    val ShadowElevation = 2.dp
-    val HeaderHeight = 80.dp
-    val IconSize = 60.dp
-    val LogoSize = 120.dp
-    val Spacing = 25.dp
-    val SmallSpacing = 5.dp
-    val MediumSpacing = 40.dp
-    val BoxHeight = 65.dp
-    val BoxWidth = 300.dp
-
+    object spacings {
+        val ShadowElevation = 2.dp
+        val HeaderHeight = 80.dp
+        val IconSize = 60.dp
+        val LogoSize = 120.dp
+        val Spacing = 25.dp
+        val SmallSpacing = 5.dp
+        val MediumSpacing = 40.dp
+        val BoxHeight = 65.dp
+        val BoxWidth = 300.dp
+    }
     // Colores
-    val azul = Color(0xFF006FB6)
-    val verde = Color(0xFF067211)
-    val verdeClaro= Color(0xFF60cc5a)
+    object colors {
+        val azul = Color(0xFF006FB6)
+        val verde = Color(0xFF067211)
+        val verdeClaro = Color(0xFF60cc5a)
 
-    val rojo = Color(0xFFbd0000)
-    val gris = Color(0xFFcccccc)
-    val amarillo = Color(0xFFf49600)
+        val rojo = Color(0xFFbd0000)
+        val gris = Color(0xFFcccccc)
+        val amarillo = Color(0xFFf49600)
 
-    val blanco = Color(0xFFFFFFFF)
-    val negro = Color(0xFF000000)
-
+        val blanco = Color(0xFFFFFFFF)
+        val negro = Color(0xFF000000)
+    }
     // Typography
-    val detalles = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontSize = 9.sp)
-    val titulos = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontSize = 24.sp)
-    val normal = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontSize = 15.sp)
+    object typography {
+        val detalles = TextStyle(
+            fontFamily = FontFamily.Default,
+            fontSize = 9.sp
+        )
+        val titulos = TextStyle(
+            fontFamily = FontFamily.Default,
+            fontSize = 24.sp
+        )
+        val normal = TextStyle(
+            fontFamily = FontFamily.Default,
+            fontSize = 15.sp
+        )
+    }
 }

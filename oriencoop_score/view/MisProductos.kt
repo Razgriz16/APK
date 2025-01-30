@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.oriencoop_score.Pantalla
 import com.example.oriencoop_score.R
-import com.example.oriencoop_score.view_model.PantallaPrincipalViewModel
 import com.example.oriencoop_score.Result
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.ui.res.vectorResource
@@ -51,11 +50,14 @@ fun MisProductos(navController: NavController) {
     ) {
 
 
-        ProductsScreen(navController = navController, onBackClick = { navController.navigate(Pantalla.PantallaPrincipal.route) })
+        ProductsScreen(
+            navController = navController,
+            onBackClick = { navController.navigate(Pantalla.PantallaPrincipal.route) })
 
 
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductsScreen(onBackClick: () -> Unit, navController: NavController) {
@@ -65,7 +67,7 @@ fun ProductsScreen(onBackClick: () -> Unit, navController: NavController) {
                 title = {
 
                     Text(
-                        fontSize = 15.sp,
+                        fontSize = com.example.oriencoop_score.ui.theme.AppTheme.typography.titulos.fontSize,
                         text = "Mis Productos",
                         color = Color(0xFF006FB6),
                         textAlign = TextAlign.Left
@@ -75,7 +77,11 @@ fun ProductsScreen(onBackClick: () -> Unit, navController: NavController) {
 
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = com.example.oriencoop_score.ui.theme.amarillo)
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = com.example.oriencoop_score.ui.theme.amarillo
+                        )
                     }
 
                 },
@@ -87,11 +93,12 @@ fun ProductsScreen(onBackClick: () -> Unit, navController: NavController) {
         },
         bottomBar = {
             Box(
-            modifier = Modifier
-                .padding(bottom = 16.dp)
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
 
-        )
-        { BottomBar(navController) }}
+            )
+            { BottomBar(navController) }
+        }
 
 
     ) { paddingValues ->
@@ -104,24 +111,30 @@ fun ProductsScreen(onBackClick: () -> Unit, navController: NavController) {
             verticalArrangement = Arrangement.Center
         ) {
 
-            Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly){
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
                 ProductButton(
                     icon = R.drawable.bank,
                     text = "Cuenta Capitalización",
-                    onClick = { navController.navigate(Pantalla.HarryPotterView.route) }
+                    onClick = { navController.navigate(Pantalla.CuentaCap.route) }
                 )
 
                 ProductButton(
                     icon = R.drawable.piggy_bank,
                     text = "Cuenta De\nahorro",
-                    onClick = { /* Handle click */ }
+                    onClick = { }
                 )
             }
 
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly){
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
                 ProductButton(
                     icon = R.drawable.credito_cuotas,
                     text = "Crédito en\ncuotas",
@@ -137,7 +150,10 @@ fun ProductsScreen(onBackClick: () -> Unit, navController: NavController) {
 
 
             Spacer(modifier = Modifier.height(16.dp))
-            Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly){
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
                 ProductButton(
                     icon = R.drawable.lcr,
                     text = "Línea de crédito\nrotativa",
@@ -152,7 +168,7 @@ fun ProductsScreen(onBackClick: () -> Unit, navController: NavController) {
             }
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 ProductButton(
                     icon = R.drawable.call,
                     text = "Dap call",
@@ -161,14 +177,9 @@ fun ProductsScreen(onBackClick: () -> Unit, navController: NavController) {
             }
 
 
-
-
-
         }
     }
 }
-
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -183,12 +194,15 @@ fun ProductButton(
     Card(onClick = onClick, modifier = modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(16.dp).size(80.dp)
+            modifier = Modifier
+                .padding(16.dp)
+                .size(80.dp)
         ) {
             Image(
                 painter = painterResource(id = icon),
                 contentDescription = null,
-                modifier = Modifier.size(36.dp))
+                modifier = Modifier.size(36.dp)
+            )
             Text(
                 text = text,
                 textAlign = TextAlign.Center,
