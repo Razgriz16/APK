@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-lcc
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api-lcc
+  template:
+    metadata:
+      labels:
+        app: api-lcc
+    spec:
+      imagePullSecrets:
+        - name: gitlab-regcred
+      containers:
+      - name: api-lcc
+        image: "${CI_REGISTRY_IMAGE}:${IMAGE_TAG}"
+        ports:
+        - containerPort: 5006

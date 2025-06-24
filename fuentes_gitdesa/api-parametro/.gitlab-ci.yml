@@ -1,0 +1,38 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  IMAGE_TAG: "$CI_COMMIT_SHORT_SHA"
+  IMAGE: "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
+  DOCKER_CONFIG: "/kaniko/.docker/"
+
+build:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:v1.23.2-debug
+    entrypoint: [""]
+  script:
+    - /kaniko/executor
+      --context $CI_PROJECT_DIR
+      --dockerfile $CI_PROJECT_DIR/Dockerfile
+      --destination $IMAGE
+      --insecure
+      --skip-tls-verify
+  only:
+    - branches  # o tu rama principal
+
+deploy_app:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache gettext curl bash
+    - curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+    - chmod +x kubectl
+    - mv kubectl /usr/local/bin/
+  script:
+    - echo "Desplegando la aplicación en Kubernetes..."
+    - envsubst < kubernetes/deployment.yaml > kubernetes/deployment-resolved.yaml
+    - cat kubernetes/deployment-resolved.yaml  # Para debug, puedes quitarlo después
+    - kubectl apply -f kubernetes/deployment-resolved.yaml
+    - kubectl apply -f kubernetes/service.yaml
